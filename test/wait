@@ -1,0 +1,17 @@
+#!/bin/bash
+
+kubectl get event --watch &
+
+set -ex
+
+kubectl wait helmrelease cortex --for=condition=Deployed --timeout=10m
+
+until [[ "$(kubectl get deploy '--output=go-template={{range .items}}{{if not .status.readyReplicas}}{{.metadata.name}} {{end}}{{end}}')" = "" ]]
+do
+	sleep 10
+done
+
+until [[ "$(kubectl get statefulset grafana '--output=go-template={{.status.readyReplicas}}')" = "1" ]]
+do
+	sleep 10
+done

@@ -1,0 +1,58 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: grafana
+spec:
+  serviceName: grafana
+  replicas: 1
+  selector:
+    matchLabels:
+      app: grafana
+  template:
+    metadata:
+      labels:
+        app: grafana
+    spec:
+      securityContext:
+        fsGroup: 3000
+      containers:
+      - name: grafana
+        image: grafana/grafana:7.1.5
+        volumeMounts:
+        - name: prov-datasources
+          mountPath: /prov/datasources
+        - name: data
+          mountPath: /var/lib/grafana
+        ports:
+        - name: grafana
+          containerPort: 3000
+        env:
+        - name: GF_SECURITY_DISABLE_INITIAL_ADMIN_CREATION
+          value: 'true'
+        - name: GF_PATHS_PROVISIONING
+          value: '/prov'
+      volumes:
+      - name: prov-datasources
+        configMap:
+          name: grafana-datasources
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes:
+      - ReadWriteOnce
+      resources:
+        requests:
+          storage: 2Gi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+spec:
+  selector:
+    app: grafana
+  ports:
+  - name: grafana
+    port: 80
+    targetPort: 3000

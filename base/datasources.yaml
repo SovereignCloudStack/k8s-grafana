@@ -1,0 +1,7 @@
+apiVersion: 1
+datasources:
+- name: Cortex
+  type: prometheus
+  access: proxy
+  url: http://default-cortex-query-frontend/api/prom
+  version: 1

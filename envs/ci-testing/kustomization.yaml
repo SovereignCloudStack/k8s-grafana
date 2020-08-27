@@ -1,0 +1,6 @@
+bases:
+- ../../base
+- github.com/SovereignCloudStack/k8s-cortex/envs/ci-testing?ref=master
+
+patches:
+- patch.yaml

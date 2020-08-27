@@ -1,0 +1,7 @@
+resources:
+- grafana.yaml
+
+configMapGenerator:
+- name: grafana-datasources
+  files:
+  - datasources.yaml
